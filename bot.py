@@ -4,6 +4,7 @@ from config import TOKEN
 from bot_logic import gen_pass
 import random
 import os
+import asyncio
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -44,8 +45,41 @@ async def hino(ctx):
     text = '*Este é o hino do maior de Minas:*'
 
 
+
+
     with open(f'sounds/hino-cruzeiro.mp3', 'rb') as f:
         sound = discord.File(f)
     await ctx.send(text, file = sound)
+
+@bot.command()
+async def tocarhino(ctx):
+    if not ctx.author.voice:
+        await ctx.send(
+                "❌ Você precisa estar em um canal de voz!"
+            )
+        return
+
+    canal = ctx.author.voice.channel
+
+    voice_client = discord.utils.get(bot.voice_clients, guild=ctx.guild)
+    if not voice_client:
+        voz = await canal.connect()
+    elif voice_client.channel != canal:
+        await voice_client.move_to(canal)
+        voz = voice_client
+    else:
+        voz = voice_client
+
+    if voz.is_playing():
+        voz.stop()
+
+    caminho_audio = "sounds/hino-cruzeiro.mp3"
+
+    voz.play(discord.FFmpegPCMAudio(caminho_audio))
+
+    while voz.is_playing():
+        await asyncio.sleep(1)
+
+    await voz.disconnect
 
 bot.run(TOKEN)

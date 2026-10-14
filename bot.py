@@ -38,4 +38,14 @@ async def meme(ctx):
         image = discord.File(f)
     await ctx.send(file = image)
 
+@bot.command()
+async def hino(ctx):
+
+    text = '*Este é o hino do maior de Minas:*'
+
+
+    with open(f'sounds/hino-cruzeiro.mp3', 'rb') as f:
+        sound = discord.File(f)
+    await ctx.send(text, file = sound)
+
 bot.run(TOKEN)
